@@ -4,12 +4,19 @@ from bs4 import BeautifulSoup
 
 def get_soup(url):
     try:
-        page = urlopen(url).read()
+        req = urlopen(url)
+        encoding = get_charset(req)
+        page = req.read().decode(encoding).encode('utf8')
+
     except Exception as e:
         print('Got an exception: ', e)
-        return BeautifulSoup()
+        return BeautifulSoup(markup='html.parser')
     else:
         return BeautifulSoup(page, 'html.parser')
+
+
+def get_charset(req):
+    return req.headers['content-type'].split('charset=')[-1]
 
 
 def get_all_text_tags(soup):
