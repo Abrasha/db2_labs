@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load mongo_tags %}
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<title>All messages</title>
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+
+	{# HEADER START#}
+	<!-- Static navbar -->
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+				        aria-expanded="false" aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Messages</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li class="active">
+						<a href="#">Messages</a>
+					</li>
+					<li>
+						<a href="/users/">Users</a>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div><!--/.container-fluid -->
+	</nav>
+	{# HEADER END #}
+
+	{# FORMS START #}
+	<div class="row">
+		{# SEND START	#}
+		<div class="col-md-6">
+			<div class="form-group">
+				<form action="/messages/" method="post">
+					{% csrf_token %}
+					<label>From:
+						<select class="form-control" name="from">
+							{% for user in users %}
+								<option value="{{ user | id }}">{{ user.name }}</option>
+							{% endfor %}
+						</select>
+					</label>
+					<label>To:
+						<select class="form-control" name="to">
+							{% for user in users %}
+								<option value="{{ user | id }}">{{ user.name }}</option>
+							{% endfor %}
+						</select>
+					</label>
+					<div class="form-group">
+						<label for="title">Title:</label>
+						<input type="text" class="form-control" id="title" name="title" required>
+					</div>
+					<div class="form-group">
+						<label for="body">Body:</label>
+						<textarea class="form-control" id="body" name="body" required rows="5"></textarea>
+					</div>
+					<button type="submit" class="btn btn-block btn-success">Send</button>
+				</form>
+			</div>
+		</div>
+		{# SEND END #}
+
+		{# SEARCH START #}
+		<div class="col-md-6">
+			<form>
+				<div class="form-group">
+					<label for="query">Search:</label>
+					<input type="text" class="form-control" id="query" name="contains" required>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" name="case_insensitive">Case insensitive:</label>
+				</div>
+				<button type="submit" class="btn btn-block btn-success">Go</button>
+			</form>
+		</div>
+		{# SEARCH END #}
+	</div>
+	{# FORMS END #}
+
+	{# MESSAGES START	#}
+	<div class="panel panel-default">
+		<div class="panel-heading"><h2>{{ title }}</h2></div>
+		<div class="panel-body">
+			<h3>Number of results: {{ number_of_messages }}</h3>
+		</div>
+		<table class="table table-striped table-bordered table-hover">
+			<thead class="thead-inverse">
+			<tr class="row">
+				<th class="col-md-2">From</th>
+				<th class="col-md-2">To</th>
+				<th class="col-md-3">Title</th>
+				<th class="col-md-4">Body</th>
+				<th class="col-md-1">Action</th>
+			</tr>
+			</thead>
+			<tbody>
+			{% for m in messages %}
+				<tr class="row">
+					<td class="col-md-2">
+						<a href="?from={{ m.from | id }}">{{ m.from.name }}</a>
+					</td>
+					<td class="col-md-2">
+						<a href="?to={{ m.to | id }}">{{ m.to.name }}</a>
+					</td>
+					<td class="col-md-3">{{ m.title }}</td>
+					<td class="col-md-4">{{ m.body }}</td>
+					<td class="col-md-1 text-center text-danger">
+						<a href="#" class="btn btn-danger">Delete</a>
+					</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{# MESSAGES END	#}
+</div>
+</body>
+</html>

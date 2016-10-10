@@ -17,8 +17,10 @@ def find_all_http_links(soup, limit=20, recursive=True):
 def execute_task_1():
     kpi_soup = get_kpi_soup()
 
+    text_tags = get_all_text_tags(kpi_soup)
+
     data = {
-        task_site: (get_all_text_tags(kpi_soup), get_all_img_tags(kpi_soup))
+        task_site: (text_tags, get_all_img_tags(kpi_soup))
     }
 
     for url in find_all_http_links(kpi_soup):

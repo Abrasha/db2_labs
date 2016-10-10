@@ -15,7 +15,7 @@
                     <xsl:for-each select="data/item">
                         <tr>
                             <td>
-                                <img style="padding: 16">
+                                <img style="padding: 16px">
                                     <xsl:attribute name="src">
                                         <xsl:value-of select="image"/>
                                     </xsl:attribute>
