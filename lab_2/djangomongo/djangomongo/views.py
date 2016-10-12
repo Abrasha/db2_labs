@@ -1,9 +1,13 @@
 from bson.objectid import ObjectId
 from dbus.exceptions import UnknownMethodException
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 
 from djangomongo.data import supplier
 import re
+
+
+def index(request):
+    return redirect('messages')
 
 
 def messages(request):
@@ -11,15 +15,25 @@ def messages(request):
         return get_messages(request)
     elif request.method == 'POST':
         send_message(request)
-        return get_messages(request)
+        return redirect('messages')
     else:
         raise UnknownMethodException('Unsupported method: ' + request.method)
+
+
+def delete_messages(request):
+    if request.method == 'POST':
+        params = request.POST
+        _id = params['_id']
+        print('Attemp')
+        supplier.remove_message(params['_id'])
+        pass
+    return redirect('messages')
 
 
 def users(request):
     if request.method == 'GET':
         return render_to_response('users.html', {
-            'title' : 'Users',
+            'title': 'Users',
             'users': supplier.get_all_users()
         })
     else:

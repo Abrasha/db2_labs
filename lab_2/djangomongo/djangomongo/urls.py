@@ -22,7 +22,8 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
-                  url(r'^admin/', admin.site.urls),
-                  url(r'^messages/$', views.messages),
-                  url(r'^users/$', views.users),
+                  url(r'^$', views.index, name='admin'),
+                  url(r'^admin/', admin.site.urls, name='admin'),
+                  url(r'^messages/$', views.messages, name='messages'),
+                  url(r'^users/$', views.users, name='users'),
               ] + static(settings.STATIC_URL)

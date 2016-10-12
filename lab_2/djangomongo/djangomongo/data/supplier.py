@@ -64,3 +64,7 @@ def get_random_message(count=1):
 def insert_message(message):
     # TODO return insert result
     messages.insert_one(message)
+
+
+def remove_message(_id):
+    messages.remove({'_id': ObjectId(_id)})
