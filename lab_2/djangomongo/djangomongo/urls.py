@@ -25,5 +25,6 @@ urlpatterns = [
                   url(r'^$', views.index, name='admin'),
                   url(r'^admin/', admin.site.urls, name='admin'),
                   url(r'^messages/$', views.messages, name='messages'),
-                  url(r'^users/$', views.users, name='users'),
+                  url(r'^users/$', views.get_users, name='users'),
+                  url(r'^delete_message/$', views.delete_messages, name='delete_messages')
               ] + static(settings.STATIC_URL)

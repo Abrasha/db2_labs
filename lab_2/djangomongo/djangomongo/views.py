@@ -5,6 +5,8 @@ from django.shortcuts import render_to_response, redirect
 from djangomongo.data import supplier
 import re
 
+from djangomongo.data.supplier import get_messages_count, get_users_count, get_all_users, get_user_statistics
+
 
 def index(request):
     return redirect('messages')
@@ -24,17 +26,19 @@ def delete_messages(request):
     if request.method == 'POST':
         params = request.POST
         _id = params['_id']
-        print('Attemp')
+        print('Attempt to delete: ', _id)
         supplier.remove_message(params['_id'])
-        pass
-    return redirect('messages')
+        return redirect('messages')
+    else:
+        raise UnknownMethodException('Unsupported method: ' + request.method)
 
 
-def users(request):
+def get_users(request):
     if request.method == 'GET':
         return render_to_response('users.html', {
+            'users_count': get_users_count(),
             'title': 'Users',
-            'users': supplier.get_all_users()
+            'users': list(get_user_statistics())
         })
     else:
         raise UnknownMethodException('Unsupported method: ' + request.method)
@@ -65,6 +69,7 @@ def get_messages(request):
     number_of_messages = len(messages_result)
 
     return render_to_response('messages.html', {
+        'messages_count': get_messages_count(),
         'title': title,
         'messages': messages_result,
         'number_of_messages': number_of_messages,
