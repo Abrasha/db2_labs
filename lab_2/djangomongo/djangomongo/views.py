@@ -5,7 +5,7 @@ from django.shortcuts import render_to_response, redirect
 from djangomongo.data import supplier
 import re
 
-from djangomongo.data.supplier import get_messages_count, get_users_count, get_all_users, get_user_statistics
+from djangomongo.data.supplier import get_messages_count, get_users_count, get_user_statistics
 
 
 def index(request):
