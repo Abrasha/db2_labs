@@ -1,4 +1,3 @@
-from apt.progress.text import _
 from bson import ObjectId
 from pymongo import MongoClient
 
