@@ -2,10 +2,10 @@ from bson.objectid import ObjectId
 from dbus.exceptions import UnknownMethodException
 from django.shortcuts import render_to_response, redirect
 
-from djangomongo.data import supplier
+from lab_2.djangomongo.data import supplier
 import re
 
-from djangomongo.data.supplier import get_messages_count, get_users_count, get_user_statistics
+from lab_2.djangomongo.data.supplier import get_messages_count, get_users_count, get_user_statistics
 
 
 def index(request):
@@ -49,18 +49,15 @@ def get_messages(request):
     if 'from' in params:  # show messages from him
         title = 'Messages from ' + str(supplier.get_user(params['from'], {'name': 1})['name'])
         messages_result = supplier.get_messages_from(params['from'])
-        pass
     elif 'to' in params:  # show messages to him
         title = 'Messages to ' + str(supplier.get_user(params['to'], {'name': 1})['name'])
         messages_result = supplier.get_messages_to(params['to'])
-        pass
     elif 'contains' in params:  # show messages that contain given string
         title = 'Search messages contains ' + params['contains']
         if 'case_insensitive' in params:
             messages_result = supplier.get_messages_body_like(re.compile(params['contains'], re.IGNORECASE))
         else:
             messages_result = supplier.get_messages_body_like(params['contains'])
-        pass
     else:
         title = 'All messages'
         messages_result = supplier.get_all_messages_with_people()

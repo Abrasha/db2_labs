@@ -1,6 +1,7 @@
 from bson import Code
 from bson import ObjectId
 from pymongo import MongoClient
+from lab_2.djangomongo.data import cache
 
 client = MongoClient()
 messages = client['labs']['messages']
@@ -69,7 +70,20 @@ def get_messages_body_like(like):
 
 
 def get_messages_from(_id):
+    if cache.is_key_present('from:' + _id):
+        return cache.get_from(_id)
+    else:
+        result = list(get_messages_from_raw(_id))
+        cache.set_from(_id, result)
+        return result
+
+
+def get_messages_from_raw(_id):
     return get_messages_with_people({'from': ObjectId(_id)})
+
+
+def refresh_from_cache(_id):
+    cache.set_from(str(_id), list(get_messages_from_raw(_id)))
 
 
 def get_messages_to(_id):
@@ -96,9 +110,13 @@ def get_random_message(count=1):
 
 
 def insert_message(message):
-    # TODO return insert result
     messages.insert_one(message)
+    if cache.is_key_present('from:' + str(message['from'])):
+        refresh_from_cache(message['from'])
 
 
 def remove_message(_id):
+    message_from = messages.find({'_id': ObjectId(_id)}).next()['from']
     messages.remove({'_id': ObjectId(_id)})
+    if cache.is_key_present('from:' + str(message_from)):
+        refresh_from_cache(message_from)
