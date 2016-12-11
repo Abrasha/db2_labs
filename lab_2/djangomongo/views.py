@@ -60,7 +60,8 @@ def get_messages(request):
             messages_result = supplier.get_messages_body_like(params['contains'])
     else:
         title = 'All messages'
-        messages_result = supplier.get_all_messages_with_people()
+        limit = params['limit'] if 'limit' in params else 100
+        messages_result = supplier.get_all_messages_with_people(int(limit))
 
     messages_result = list(messages_result)
     number_of_messages = len(messages_result)

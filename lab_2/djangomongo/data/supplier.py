@@ -45,16 +45,16 @@ def get_user_statistics():
         })
 
 
-def get_all_messages():
-    return messages.find({})
+def get_all_messages(limit=0):
+    return messages.find({}).limit(limit)
 
 
-def get_all_messages_with_people():
-    return get_messages_with_people({})
+def get_all_messages_with_people(limit=0):
+    return get_messages_with_people({}, limit)
 
 
-def get_messages_with_people(criteria, fields=None):
-    coll = messages.find(criteria) if fields is None else messages.find(criteria, fields)
+def get_messages_with_people(criteria, limit=0, fields=None):
+    coll = messages.find(criteria).limit(limit) if fields is None else messages.find(criteria, fields).limit(limit)
     for m in coll:
         yield {
             '_id': m['_id'],
@@ -66,7 +66,13 @@ def get_messages_with_people(criteria, fields=None):
 
 
 def get_messages_body_like(like):
-    return get_messages_with_people({'body': {'$regex': like}})
+    key = 'like:' + like
+    if cache.is_key_present(key):
+        return cache.get_like(like)
+    else:
+        result = list(get_messages_with_people({'body': {'$regex': like}}))
+        cache.set_like(key, result)
+        return result
 
 
 def get_messages_from(_id):
@@ -113,10 +119,16 @@ def insert_message(message):
     messages.insert_one(message)
     if cache.is_key_present('from:' + str(message['from'])):
         refresh_from_cache(message['from'])
+    if cache.is_key_present('to:' + str(message['to'])):
+        refresh_from_cache(message['to'])
 
 
 def remove_message(_id):
-    message_from = messages.find({'_id': ObjectId(_id)}).next()['from']
+    message = messages.find({'_id': ObjectId(_id)}).next()
+    message_from = message['from']
+    message_to = message['to']
     messages.remove({'_id': ObjectId(_id)})
     if cache.is_key_present('from:' + str(message_from)):
         refresh_from_cache(message_from)
+    if cache.is_key_present('to:' + str(message_to)):
+        refresh_from_cache(message_to)

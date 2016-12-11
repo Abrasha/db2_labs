@@ -1,11 +1,23 @@
-from bson.objectid import ObjectId
-from redis import StrictRedis
-import pickle
-import codecs
-import json
+from lab_2.djangomongo.helper import insert_random_messages, insert_random_users
 
-print('from' + str(ObjectId('580d26621d7d2d4e6a02813f')))
+import lab_2.djangomongo.data.supplier as supplier
 
-# a = StrictRedis()
-# s = a.set('somekey', json.dumps([{'a': 'mama'}, {'b': 'papa'}]))
-# print(json.loads(a.get('somekey').decode('utf-8')))
+# supplier.users.drop()
+# supplier.messages.drop()
+
+# insert_random_users(1000)
+
+import threading
+import multiprocessing
+from  multiprocessing import Process
+from threading import Thread
+
+
+def execute():
+    insert_random_messages(25000)
+
+
+cpu_count = multiprocessing.cpu_count()
+print('Number of CPU:', cpu_count)
+for i in range(cpu_count):
+    Process(target=execute).start()

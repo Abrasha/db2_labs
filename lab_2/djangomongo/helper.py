@@ -37,33 +37,43 @@ def get_random_message(count=1):
 
 # insert random messages
 def insert_random_messages(count):
-    messages.drop()
+    all_users = list(get_all_users())
+    users_count = len(all_users)
+    items = []
     for i in range(count):
-        sender_id = get_random_user()['_id']
+        sender_id = all_users[randint(0, users_count - 1)]['_id']
 
         while True:
             receiver_id = get_random_user()['_id']
-            if receiver_id != sender_id: break
+            if receiver_id != sender_id:
+                break
 
-        res = messages.insert_one({
+        items.append({
             'title': f.text(),
             'body': f.text(),
             'from': sender_id,
             'to': receiver_id
         })
-        print('Inserted # ' + str(i), res.inserted_id)
+        print('Generated message # ' + str(i))
+
+    messages.insert_many(items)
+    print('Done inserting messages. count = ', count)
 
 
 # insert random users
 def insert_random_users(count):
-    users.drop()
+    items = []
     for i in range(count):
-        users.insert_one({
+        items.append({
             'name': f.name(),
             'age': randint(5, 50)
         })
-        print('Inserted # ' + i)
+        # print('Inserted # ' + i)
+        print('Generated user # ' + str(i))
+
+    users.insert_many(items)
+    print('Done inserting users. count = ', count)
 
 # insert_random_users(100)
 
-insert_random_messages(1000)
+# insert_random_messages(1000)
